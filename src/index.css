@@ -1,29 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
 
 :root {
-  --bg-dark: #fcfaf7; /* Soft cream background */
-  --bg-card: #ffffff; /* White Cards */
+  --bg-dark: #fcfaf7;
+  /* Soft cream background */
+  --bg-card: #ffffff;
+  /* White Cards */
   --bg-card-hover: #f5f0ea;
-  
-  --bg-beige: #ffffff; 
-  
-  --primary: #ff8b3d; /* Bright warm orange */
+
+  --bg-beige: #ffffff;
+
+  --primary: #ff8b3d;
+  /* Bright warm orange */
   --primary-hover: #e5762b;
-  
-  --accent-orange: #ff8b3d; 
-  
-  --text-primary: #332d29; /* Dark warm grey */
-  --text-primary-inverse: #332d29; 
-  --text-secondary: #7a7069; /* Medium warm grey */
+
+  --accent-orange: #ff8b3d;
+
+  --text-primary: #332d29;
+  /* Dark warm grey */
+  --text-primary-inverse: #332d29;
+  --text-secondary: #7a7069;
+  /* Medium warm grey */
   --text-muted: #a39992;
-  
+
   --success: #10b981;
   --danger: #ef4444;
   --warning: #f59e0b;
-  
+
   --border-color: #ede5dd;
   --shadow-card: 0 4px 20px rgba(255, 139, 61, 0.08);
-  
+
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
@@ -37,7 +42,8 @@
 
 body {
   font-family: 'Outfit', 'Noto Nastaliq Urdu', sans-serif;
-  background-color: #e8e3dc; /* Slightly darker than app-wrapper for contrast on desktop */
+  background-color: #e8e3dc;
+  /* Slightly darker than app-wrapper for contrast on desktop */
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -48,7 +54,8 @@ body {
 /* Mobile App Wrapper to constrain it on desktop */
 .app-wrapper {
   width: 100%;
-  max-width: 480px; /* Mobile width */
+  max-width: 480px;
+  /* Mobile width */
   min-height: 100vh;
   background-color: var(--bg-dark);
   position: relative;
@@ -61,16 +68,20 @@ body {
 .page-content {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 80px; /* Space for bottom nav */
+  padding-bottom: 80px;
+  /* Space for bottom nav */
 }
 
 /* Scrollbar hiding for clean app look */
 .page-content::-webkit-scrollbar {
   display: none;
 }
+
 .page-content {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Buttons */
@@ -143,7 +154,7 @@ body {
   border-radius: 12px;
   transition: all 0.2s;
   margin-bottom: 24px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .form-label {
@@ -157,7 +168,7 @@ body {
 
 .form-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 2px 10px rgba(255,139,61,0.15);
+  box-shadow: 0 2px 10px rgba(255, 139, 61, 0.15);
 }
 
 .form-input::placeholder {
@@ -208,7 +219,7 @@ body {
   border-radius: var(--radius-md);
   padding: 20px;
   margin-bottom: 16px;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: var(--shadow-card);
 }
 
@@ -220,8 +231,15 @@ body {
   font-weight: 600;
 }
 
-.badge-warning { background: rgba(255, 179, 0, 0.1); color: var(--warning); }
-.badge-success { background: rgba(0, 200, 83, 0.1); color: var(--success); }
+.badge-warning {
+  background: rgba(255, 179, 0, 0.1);
+  color: var(--warning);
+}
+
+.badge-success {
+  background: rgba(0, 200, 83, 0.1);
+  color: var(--success);
+}
 
 /* Top Header */
 .top-header {
@@ -255,7 +273,8 @@ body {
   justify-content: center;
   font-family: 'Noto Nastaliq Urdu', serif;
   font-size: 1.5rem;
-  padding-bottom: 4px; /* optical alignment */
+  padding-bottom: 4px;
+  /* optical alignment */
 }
 
 /* DARK THEME */
@@ -275,4 +294,3 @@ body {
 [data-theme="dark"] body {
   background-color: #0a0a0a;
 }
-
