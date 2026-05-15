@@ -1,1 +1,1 @@
-export const API_BASE = import.meta.env.VITE_API_URL || 'https://khidmat-official-v1.vercel.app/api';
+export const API_BASE = (import.meta.env.VITE_API_URL || 'https://khidmat-official-v1.vercel.app') + '/api';
