@@ -123,7 +123,9 @@ app.get('/api/providers/nearby', async (req, res) => {
 });
 
 // --- SERVER START ---
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 KHIDMAT SUPABASE BACKEND: Online at http://localhost:${PORT}`);
 });
+
+module.exports = app;
