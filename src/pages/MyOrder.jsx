@@ -1,50 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Phone, MessageSquare, X, MapPin, Navigation, Menu, Bell, User, Briefcase, ShieldCheck } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import L from 'leaflet';
 
-// Fix for default Leaflet markers
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-const providerIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/1048/1048315.png',
-  iconSize: [38, 38],
-  iconAnchor: [19, 38],
-  popupAnchor: [0, -38],
-});
-
-const Tracking = () => {
+const MyOrder = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  const provider = location.state?.provider || { 
-    name: 'Abdul Rehman', 
-    category: 'Plumber', 
-    latitude: 31.5250, 
-    longitude: 74.3600,
-    phone: '03001234567',
-    rating: 4.8
-  };
-  
-  const distanceKm = 2.5; 
-  const customerLat = provider.latitude - 0.015;
-  const customerLng = provider.longitude - 0.010;
-  const [eta, setEta] = useState(8);
-  
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setEta(prev => (prev > 0 ? prev - 1 : 0));
-    }, 60000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const mapCenter = [(provider.latitude + customerLat) / 2, (provider.longitude + customerLng) / 2];
 
   return (
     <div className="app-wrapper">
@@ -57,7 +16,7 @@ const Tracking = () => {
         <div className="header-title-center" style={{ flex: 1 }}>
           Track Order
         </div>
-        <div style={{ width: '24px' }}></div>
+        <div style={{ width: '24px' }}></div> {/* Spacer for centering */}
       </div>
 
       <div className="page-content p-6 pb-24 flex-col">
@@ -113,18 +72,22 @@ const Tracking = () => {
           </div>
         </div>
 
-        {/* Live Map */}
-        <div className="card mb-6" style={{ height: '220px', borderRadius: '24px', position: 'relative', overflow: 'hidden', padding: 0 }}>
+        {/* Mini Map Placeholder */}
+        <div className="card mb-6" style={{ height: '220px', borderRadius: '24px', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '16px', backgroundImage: 'radial-gradient(#d1d5db 2px, transparent 2px)', backgroundSize: '24px 24px', backgroundColor: '#f9fafb', padding: 0 }}>
+          <div style={{ backgroundColor: 'white', padding: '10px 20px', borderRadius: '20px', fontSize: '0.9rem', fontWeight: '700', color: '#111827', boxShadow: '0 4px 15px rgba(0,0,0,0.08)', zIndex: 5, marginTop: '16px' }}>
+            Distance: 2.5 km • <span style={{ color: 'var(--primary)' }}>8 min remaining</span>
+          </div>
           
-          <MapContainer center={mapCenter} zoom={13} style={{ height: '100%', width: '100%' }} zoomControl={false}>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <Marker position={[customerLat, customerLng]}><Popup>You</Popup></Marker>
-            <Marker position={[provider.latitude, provider.longitude]} icon={providerIcon}><Popup>{provider.name}</Popup></Marker>
-            <Polyline positions={[[customerLat, customerLng], [provider.latitude, provider.longitude]]} color="var(--primary)" weight={4} dashArray="10, 10" />
-          </MapContainer>
+          {/* Mock Path */}
+          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
+            <path d="M 120 160 Q 180 180 200 120 T 260 80" fill="none" stroke="var(--primary)" strokeWidth="4" strokeDasharray="8 8" />
+          </svg>
 
-          <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'white', padding: '10px 20px', borderRadius: '20px', fontSize: '0.9rem', fontWeight: '700', color: '#111827', boxShadow: '0 4px 15px rgba(0,0,0,0.08)', zIndex: 1000 }}>
-            Distance: {distanceKm} km • <span style={{ color: 'var(--primary)' }}>{eta} min remaining</span>
+          <div style={{ position: 'absolute', top: '65%', left: '30%', width: '48px', height: '48px', backgroundColor: 'var(--primary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid white', boxShadow: '0 4px 15px rgba(0,123,107,0.3)', zIndex: 2 }}>
+            <span style={{ fontSize: '20px' }}>🛵</span>
+          </div>
+          <div style={{ position: 'absolute', top: '35%', right: '25%', width: '48px', height: '48px', backgroundColor: '#111827', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid white', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', zIndex: 2 }}>
+            <MapPin size={24} color="white" />
           </div>
         </div>
 
@@ -142,25 +105,25 @@ const Tracking = () => {
               </div>
             </div>
             <div>
-              <h3 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', fontWeight: '700', color: '#111827' }}>{provider.name}</h3>
+              <h3 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', fontWeight: '700', color: '#111827' }}>Abdul Rehman</h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                <span style={{ color: '#b45309', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>⭐ {provider.rating || '4.8'}</span> • 
-                <span style={{ color: 'var(--primary)', fontWeight: '600' }}>ETA {eta} min</span>
+                <span style={{ color: '#b45309', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>⭐ 4.8</span> • 
+                <span style={{ color: 'var(--primary)', fontWeight: '600' }}>ETA 8 min</span>
               </div>
             </div>
           </div>
-          <a href={`tel:${provider.phone}`} style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(0,123,107,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', textDecoration: 'none' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(0,123,107,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <Phone size={24} color="var(--primary)" fill="var(--primary)" />
-          </a>
+          </div>
         </div>
 
         {/* Chat Snippet */}
-        <div className="card p-4 mb-8" style={{ display: 'flex', alignItems: 'center', gap: '16px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'none' }} onClick={() => navigate('/chat', { state: { provider } })}>
+        <div className="card p-4 mb-8" style={{ display: 'flex', alignItems: 'center', gap: '16px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'none' }}>
           <div style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <MessageSquare size={20} color="#0284c7" />
           </div>
           <div style={{ flex: 1, fontSize: '0.9rem', fontStyle: 'italic', color: '#475569', fontWeight: '500' }}>
-            "{provider.name}: I'm on my way..."
+            "Abdul Rehman: I'm on my way..."
           </div>
           <div style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary)', cursor: 'pointer' }}>
             Open Chat &gt;
@@ -202,4 +165,4 @@ const Tracking = () => {
   );
 };
 
-export default Tracking;
+export default MyOrder;

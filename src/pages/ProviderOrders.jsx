@@ -3,7 +3,7 @@ import { ClipboardList } from 'lucide-react';
 
 const ProviderOrders = () => {
   return (
-    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '100%', alignItems: 'center' }}>
+    <div className="app-wrapper page-content flex-col" style={{ padding: '24px', alignItems: 'center' }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', alignSelf: 'flex-start', marginBottom: '40px' }}>
         My Orders
       </h1>
@@ -14,7 +14,7 @@ const ProviderOrders = () => {
       }}>
         <div style={{
           width: '80px', height: '80px', borderRadius: '50%',
-          backgroundColor: 'rgba(255, 139, 61, 0.1)',
+          backgroundColor: 'rgba(0, 115, 96, 0.1)',
           display: 'flex', justifyContent: 'center', alignItems: 'center',
           marginBottom: '20px'
         }}>

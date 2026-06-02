@@ -43,7 +43,7 @@ const CustomerOrders = () => {
   const filteredOrders = orders.filter(o => o.status === activeTab);
 
   return (
-    <div style={{ padding: '24px 24px 100px 24px', overflowY: 'auto', height: '100%' }}>
+    <div className="app-wrapper page-content flex-col" style={{ padding: '24px 24px 100px 24px' }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '24px' }}>
         My Bookings
       </h1>

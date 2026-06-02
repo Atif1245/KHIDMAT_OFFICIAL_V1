@@ -15,7 +15,9 @@ const CustomerProfile = () => {
   const [formData, setFormData] = useState({
     name: savedUser.name || 'Ahmed Raza',
     email: savedUser.email || 'ahmed@example.com',
-    phone: savedUser.phone || '+92 300 1234567'
+    phone: savedUser.phone || '+92 300 1234567',
+    cnic: savedUser.cnic || '',
+    address: savedUser.address || ''
   });
 
   const handleImageUpload = (e) => {

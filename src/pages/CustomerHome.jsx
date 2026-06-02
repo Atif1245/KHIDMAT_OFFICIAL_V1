@@ -1,241 +1,110 @@
-               import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Wrench, Zap, Smartphone, Wind, ChevronRight, MessageCircle } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { Search, Mic, Wrench, Zap, Wind, Navigation, User, PaintBucket, Briefcase, MapPin } from 'lucide-react';
 import { API_BASE } from '../api';
-
-// Fix for default Leaflet markers in React
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
 
 const CustomerHome = () => {
   const navigate = useNavigate();
-  const [providers, setProviders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCity, setSelectedCity] = useState('Lahore');
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isListening, setIsListening] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Get User Name from localStorage
-  const savedUser = localStorage.getItem('user');
-  const userName = savedUser ? JSON.parse(savedUser).name : 'Customer';
+  const handleVoiceSearch = () => {
+    setIsListening(true);
+    setTimeout(() => {
+      setIsListening(false);
+      navigate('/search', { state: { voiceQuery: 'Plumber' } });
+    }, 2000);
+  };
 
-  useEffect(() => {
-    fetch(`${API_BASE}/api/providers/nearby`)
-      .then(res => res.json())
-      .then(data => {
-        setProviders(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching providers:", err);
-        setLoading(false);
-      });
-  }, []);
+  const handleSearchClick = () => {
+    navigate('/search');
+  };
 
   const categories = [
-    { id: 1, name: 'Plumber', nameUrdu: 'پلمبر', icon: <Wrench /> },
-    { id: 2, name: 'Electrician', nameUrdu: 'الیکٹریشن', icon: <Zap /> },
-    { id: 3, name: 'Tutor', nameUrdu: 'ٹیوٹر', icon: <span style={{fontSize: '24px'}}>📖</span> },
-    { id: 4, name: 'Maid', nameUrdu: 'ملازمہ', icon: <span style={{fontSize: '24px'}}>🧹</span> },
-    { id: 5, name: 'AC Repair', nameUrdu: 'اے سی', icon: <Wind /> },
-    { id: 6, name: 'Mechanic', nameUrdu: 'مکینک', icon: <Wrench /> },
-    { id: 7, name: 'Phone', nameUrdu: 'فون', icon: <Smartphone /> },
-    { id: 8, name: 'Painter', nameUrdu: 'پینٹر', icon: <span style={{fontSize: '24px'}}>🎨</span> }
+    { name: 'Cleaning', icon: <span style={{fontSize: '24px'}}>🧹</span>, bg: '#fef08a' },
+    { name: 'AC Repair', icon: <Wind size={24} color="#0284c7" />, bg: '#e0f2fe' },
+    { name: 'Electrician', icon: <Zap size={24} color="#ca8a04" />, bg: '#fef9c3' },
+    { name: 'Plumber', icon: <Wrench size={24} color="#1e3a8a" />, bg: '#dbeafe' },
+    { name: 'Painter', icon: <PaintBucket size={24} color="#9333ea" />, bg: '#f3e8ff' }
   ];
-
-  const cities = [
-    "Lahore", "Karachi", "Islamabad", "Rawalpindi", "Peshawar", 
-    "Quetta", "Multan", "Faisalabad", "Gujranwala", "Sialkot"
-  ];
-
-  // Map Center (could be dynamic based on city)
-  const centerPosition = [31.5204, 74.3587];
-
-  // Filter providers based on category
-  const filteredProviders = providers.filter(pro => {
-    // If a category is selected, filter by it. Otherwise show all.
-    if (selectedCategory) {
-      const proCat = (pro.category || 'General Service').toLowerCase();
-      return proCat.includes(selectedCategory.toLowerCase());
-    }
-    return true;
-  });
 
   return (
-    <div style={{ padding: '0 24px 100px 24px', overflowY: 'auto' }}>
-      
-      {/* Welcome Section */}
-      <div style={{ marginBottom: '24px', marginTop: '10px' }}>
-        <h1 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', margin: 0 }}>
-          👋 Hello, {userName}!
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
-          What service do you need today?
-        </p>
-      </div>
-
-      {/* Location Selector */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', color: 'var(--text-secondary)' }}>
-        <MapPin size={18} color="var(--primary)" />
-        <span style={{ fontSize: '0.9rem' }}>Location:</span>
-        <select 
-          className="form-input" 
-          style={{ marginBottom: 0, padding: '8px 12px', background: 'transparent', border: 'none', boxShadow: 'none', fontWeight: '600', color: 'var(--text-primary)', cursor: 'pointer', outline: 'none' }}
-          value={selectedCity}
-          onChange={(e) => setSelectedCity(e.target.value)}
-        >
-          {cities.map(city => (
-            <option key={city} value={city}>{city}</option>
-          ))}
-        </select>
-      </div>     
-
-      {/* Search */}
-      <div style={{ position: 'relative', marginBottom: '32px' }} onClick={() => navigate('/search')}>
-        <Search size={20} color="var(--text-secondary)" style={{ position: 'absolute', left: '16px', top: '16px' }} />
-        <input 
-          type="text" 
-          className="form-input" 
-          placeholder="Search plumber, electrician..." 
-          style={{ paddingLeft: '48px', marginBottom: 0, cursor: 'pointer' }}
-          readOnly
-        />
-      </div>
-
-      {/* Live Map */}
-      <div style={{ marginBottom: '32px' }}>
-        <h2 style={{ fontSize: '1.2rem', color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          📍 Providers Near You
-        </h2>
-        <div style={{ height: '200px', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--shadow-card)', border: '1px solid var(--border-color)' }}>
-          <MapContainer center={centerPosition} zoom={13} style={{ height: '100%', width: '100%' }} zoomControl={false}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {filteredProviders.map((pro, index) => {
-              // Create a dummy location near Lahore Center if not provided
-              const lat = pro.latitude || (31.5204 + (Math.random() - 0.5) * 0.05);
-              const lng = pro.longitude || (74.3587 + (Math.random() - 0.5) * 0.05);
-              return (
-                <Marker key={pro.id || index} position={[lat, lng]}>
-                  <Popup>
-                    <strong>{pro.name}</strong><br/>
-                    {pro.category || 'General Service'} <br/>
-                    <div onClick={() => navigate('/provider-details', { state: { provider: pro } })} style={{color: 'var(--primary)', fontWeight: 'bold', cursor: 'pointer'}}>Book Now</div>
-                  </Popup>
-                </Marker>
-              );
-            })}
-          </MapContainer>
+    <div className="app-wrapper">
+      <div className="page-content p-6 pb-24 flex-col">
+        
+        {/* Search Bar */}
+        <div className="mb-6" style={{ position: 'relative' }}>
+          <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }}>
+            <Search size={20} />
+          </div>
+          <input 
+            type="text" 
+            className="form-input" 
+            style={{ paddingLeft: '48px', paddingRight: '48px', height: '56px', borderRadius: '28px', backgroundColor: 'white', boxShadow: 'var(--shadow-sm)', border: 'none' }}
+            placeholder="What service do you need?" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onClick={handleSearchClick}
+          />
+          <div 
+            style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: isListening ? '#ef4444' : 'var(--primary)', cursor: 'pointer', transition: 'color 0.2s' }}
+            onClick={handleVoiceSearch}
+          >
+            <Mic size={20} />
+          </div>
         </div>
-      </div>
 
-      {/* Categories */}
-      <div style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 className="urdu-text" style={{ fontSize: '1.2rem', color: 'var(--text-primary)', margin: 0 }}>
-            فوری کیٹیگریز
-          </h2>
-          {selectedCategory && (
-            <span 
-              onClick={() => setSelectedCategory(null)} 
-              style={{ fontSize: '0.8rem', color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              Clear Filter
-            </span>
-          )}
+        {/* Active Tasks */}
+        <div className="mb-8">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '700', color: '#111827', margin: 0 }}>Active Tasks</h3>
+          </div>
+          
+          <div className="card p-4" style={{ borderRadius: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Wrench size={24} color="#1e3a8a" />
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: '700', color: '#111827' }}>Plumbing Repair</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Today, 4:00 PM</div>
+                </div>
+              </div>
+              <div style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '6px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '600' }}>
+                Pending
+              </div>
+            </div>
+            <button className="btn-primary" onClick={() => navigate('/my-order')} style={{ width: '100%', padding: '12px', borderRadius: '16px' }}>
+              Track Provider
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-          {categories.map(cat => {
-            const isSelected = selectedCategory === cat.name;
-            return (
-              <div 
-                key={cat.id} 
-                onClick={() => setSelectedCategory(isSelected ? null : cat.name)}
-                style={{ 
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer',
-                  transform: isSelected ? 'scale(1.05)' : 'scale(1)', transition: 'all 0.2s'
-                }}
-              >
-                <div style={{ 
-                  width: '60px', height: '60px', borderRadius: '16px', 
-                  border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border-color)', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                  color: isSelected ? 'var(--primary)' : 'var(--text-secondary)',
-                  backgroundColor: isSelected ? 'rgba(255,139,61,0.1)' : 'var(--bg-card)',
-                  boxShadow: isSelected ? '0 4px 10px rgba(255,139,61,0.2)' : 'none',
-                  transition: 'all 0.2s'
-                }}>
+
+        {/* Categories */}
+        <div className="mb-8">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '700', color: '#111827', margin: 0 }}>Categories</h3>
+            <span style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>See All</span>
+          </div>
+          <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '8px', msOverflowStyle: 'none', scrollbarWidth: 'none' }} className="hide-scrollbar">
+            {categories.map((cat, idx) => (
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/search')}>
+                <div style={{ width: '64px', height: '64px', backgroundColor: cat.bg, borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
                   {cat.icon}
                 </div>
-                <span className="urdu-text" style={{ 
-                  fontSize: '0.8rem', 
-                  color: isSelected ? 'var(--primary)' : 'var(--text-secondary)',
-                  fontWeight: isSelected ? 'bold' : 'normal'
-                }}>
-                  {cat.nameUrdu}
-                </span>
+                <span style={{ fontSize: '0.85rem', fontWeight: '500', color: '#4b5563' }}>{cat.name}</span>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Top Rated List */}
-      <div>
-        <h2 className="urdu-text" style={{ fontSize: '1.2rem', color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {selectedCategory ? `${selectedCategory} Professionals` : '🔥 بہترین پروفیشنلز'}
-        </h2>
-        
-        {loading ? <p>Loading nearby professionals...</p> : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {filteredProviders.length === 0 ? (
-              <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '20px' }}>
-                No providers found for this category.
-              </p>
-            ) : (
-              filteredProviders.map((pro, index) => (
-                <div key={pro.id || index} className="card" style={{ padding: '16px', display: 'flex', gap: '16px', marginBottom: '0' }}>
-                  <div style={{ width: '64px', height: '64px', borderRadius: '32px', background: 'rgba(255, 139, 61, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
-                    👤
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>{pro.name || 'Professional'}</h3>
-                      <div className="badge">⭐ 4.8</div>
-                    </div>
-                    <p className="urdu-text" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
-                      {pro.category || 'General Service'}
-                    </p>
-                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                      <span>📍 {selectedCity}</span>
-                      <span>💰 {pro.price_range || 'Rs. 1000/hr'}</span>
-                    </div>
-                    
-                    {/* Action Buttons */}
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                      <button style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', cursor: 'pointer' }}>
-                        <MessageCircle size={14} /> Msg
-                      </button>
-                      <button onClick={() => navigate('/provider-details', { state: { provider: pro } })} style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'var(--primary)', border: 'none', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', cursor: 'pointer' }}>
-                        View <ChevronRight size={14} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };
