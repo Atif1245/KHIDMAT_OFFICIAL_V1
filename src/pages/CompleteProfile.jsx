@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Briefcase, CreditCard, MapPin, Clock, Save, ArrowLeft, Camera } from 'lucide-react';
+import { Briefcase, CreditCard, MapPin, Clock, Save, ArrowLeft, Camera, User, Phone } from 'lucide-react';
 import { API_BASE } from '../api';
 
 const CompleteProfile = () => {
@@ -8,6 +8,8 @@ const CompleteProfile = () => {
   const userId = localStorage.getItem('userId');
   
   const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
     experience: '',
     cnic: '',
     address: '',
@@ -16,6 +18,27 @@ const CompleteProfile = () => {
   });
 
   const [profilePic, setProfilePic] = useState(localStorage.getItem(`profilePic_${userId}`) || null);
+
+  useEffect(() => {
+    if (userId) {
+      fetch(`${API_BASE}/api/providers/profile/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data) {
+            setFormData({
+              name: data.name || '',
+              phone: data.phone || '',
+              experience: data.experience || '',
+              cnic: data.cnic || '',
+              address: data.address || '',
+              timings: data.timings || '',
+              about: data.about || ''
+            });
+          }
+        })
+        .catch(err => console.error("Error fetching profile:", err));
+    }
+  }, [userId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -103,10 +126,37 @@ const CompleteProfile = () => {
       <form onSubmit={handleSubmit} style={formStyle}>
         
         <div style={inputGroupStyle}>
+          <label style={labelStyle}><User size={16} /> Full Name</label>
+          <input 
+            type="text" 
+            name="name"
+            value={formData.name}
+            placeholder="Your full name" 
+            style={inputStyle}
+            onChange={handleChange}
+            required 
+          />
+        </div>
+
+        <div style={inputGroupStyle}>
+          <label style={labelStyle}><Phone size={16} /> Phone Number</label>
+          <input 
+            type="text" 
+            name="phone"
+            value={formData.phone}
+            placeholder="03XXXXXXXXX" 
+            style={inputStyle}
+            onChange={handleChange}
+            required 
+          />
+        </div>
+
+        <div style={inputGroupStyle}>
           <label style={labelStyle}><Briefcase size={16} /> Work Experience (Years)</label>
           <input 
             type="number" 
             name="experience"
+            value={formData.experience}
             placeholder="e.g. 5" 
             style={inputStyle}
             onChange={handleChange}
@@ -119,6 +169,7 @@ const CompleteProfile = () => {
           <input 
             type="text" 
             name="cnic"
+            value={formData.cnic}
             placeholder="35201-XXXXXXX-X" 
             style={inputStyle}
             onChange={handleChange}
@@ -131,6 +182,7 @@ const CompleteProfile = () => {
           <input 
             type="text" 
             name="address"
+            value={formData.address}
             placeholder="House #, Street, Area" 
             style={inputStyle}
             onChange={handleChange}
@@ -143,6 +195,7 @@ const CompleteProfile = () => {
           <input 
             type="text" 
             name="timings"
+            value={formData.timings}
             placeholder="e.g. 9 AM to 6 PM" 
             style={inputStyle}
             onChange={handleChange}
@@ -154,6 +207,7 @@ const CompleteProfile = () => {
           <label style={labelStyle}>About Your Service (Urdu/English)</label>
           <textarea 
             name="about"
+            value={formData.about}
             placeholder="Apne kaam ke baare mein thora batayein..." 
             style={{ ...inputStyle, minHeight: '100px', resize: 'none' }}
             onChange={handleChange}

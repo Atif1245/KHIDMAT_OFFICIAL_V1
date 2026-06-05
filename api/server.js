@@ -56,7 +56,7 @@ app.get('/api/providers/profile/:id', async (req, res) => {
 app.put('/api/providers/update/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, cnic, address, timings, about, experience, phone } = req.body;
+    const { name, cnic, address, timings, about, experience, phone, email, city, category } = req.body;
 
     const { data, error } = await supabase
       .from('user')
@@ -67,7 +67,10 @@ app.put('/api/providers/update/:id', async (req, res) => {
         timings,
         about,
         experience,
-        phone
+        phone,
+        email,
+        city,
+        category
       })
       .eq('id', id)
       .select();
